@@ -3,9 +3,9 @@ package com.company;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.io.*;
+
 /**
  * com.company
  * Created by thien
@@ -13,33 +13,32 @@ import java.io.*;
  * Description: ...
  */
 public class SlangWord {
-    private HashMap<String, String> dictionary;
+    private HashMap<String, ArrayList<String>> dictionary;
 
     SlangWord() {
-        dictionary = new HashMap<String, String>();
+        dictionary = new HashMap<String, ArrayList<String>>();
 
-        dictionary.put(":)", "happy");
-        dictionary.put(":((", "sad");
-        dictionary.put("<3", "love");
+//        dictionary.put(":)", "happy");
+//        dictionary.put(":((", "sad");
+//        dictionary.put("<3", "love");
 
-        System.out.println("first element: " + dictionary.get(":)"));
 
         // traversing
-        for (Map.Entry<String, String> word: dictionary.entrySet()) {
-            System.out.println(word.getKey() + ": " + word.getValue());
-        }
+//        for (Map.Entry<String, String> word: dictionary.entrySet()) {
+//            System.out.println(word.getKey() + ": " + word.getValue());
+//        }
 
-        String keyword = ":";
-        for (Map.Entry<String, String> word: dictionary.entrySet()) {
-            if (word.getKey().contains(keyword)) {
-                System.out.println("found: " + word.getKey() + ": " + word.getValue());
-            }
-        }
+//        String keyword = ":";
+//        for (Map.Entry<String, String> word: dictionary.entrySet()) {
+//            if (word.getKey().contains(keyword)) {
+//                System.out.println("found: " + word.getKey() + ": " + word.getValue());
+//            }
+//        }
 
     }
 
-    public void loadFromTextFile(String filename) throws IOException {
-        //this.dictionary.clear();
+    public HashMap<String, ArrayList<String>> loadFromTextFile(String filename) throws IOException {
+        //HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
         BufferedReader br;
 
         try
@@ -49,33 +48,114 @@ public class SlangWord {
         catch(IOException exc)
         {
             System.out.println("Error opening file");
-            return ;
+            return dictionary;
         }
         String str ;
+        int i = 0;
+        int countDictionary = 0;
+        HashSet<String> setSlang = new HashSet<String>();
         while (true)
         {
+            i++;
             str = br.readLine();
-            if (str==null)
-                break;
+            //System.out.println(i + ". " + str);
+            if (str==null) break;
             String[] temp = str.split("`");
-            String key = temp[0];
-            String[] def = temp[1].split("\\| ");
-
-            System.out.println("Key: " + key);
-            System.out.println("Value: ");
-            for (String w: def) {
-                System.out.print(w + ", ");
+            String slang = temp[0];
+            //String[] def = temp[1].split("\\| ");
+            setSlang.add(slang);
+            ArrayList<String> definitions = new ArrayList<String>(Arrays.asList(temp[1].split("\\| ")));
+            if (definitions.size()!=0) {
+                //System.out.println("\t\t\t\t" + i + ". " + slang);
+                System.out.println(slang);
+            } else {
+                System.out.println("\n\n\n\n\n\n\n\n");
             }
-            System.out.println("\n");
-
-//            String sID = temp[0], tName = temp[1], sAge=temp[2], tGpa = temp[3], tImage = temp[4], tAddress = temp[5], tNote = temp[6];
-//            int iID = Integer.parseInt(sID);
-//            int iAge = Integer.parseInt(sAge);
-//            double dGpa = Double.parseDouble(tGpa);
-//            dGpa = (double) Math.round(dGpa * 100) / 100;
-//            studentList.add(new Student(iID, tName, iAge, dGpa, tImage, tAddress, tNote));
+            if (dictionary.containsKey(slang)==true) {
+                ArrayList<String> oldDefinition = dictionary.get(slang);
+                definitions.addAll(oldDefinition);
+            }
+            dictionary.put(slang, definitions);
         }
-        System.out.println("Successful");
+        System.out.println("\n\nSuccessful");
+        System.out.println("\n\ndictionary: " + dictionary.size());
+        System.out.println("\n\nset size: " + setSlang.size());
+        //map.put("Numbers", list1);
+        Iterator<String> itr = setSlang.iterator();
+        int index = 0;
+        while (itr.hasNext()) {
+            index++;
+            System.out.println(itr.next());
+        }
+        return dictionary;
+    }
+
+    public HashMap<String, ArrayList<String>> searchByDefinition(String needle) {
+//        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+//
+//        ArrayList<String> list1 = new ArrayList<String>();
+//        ArrayList<String> list2 = new ArrayList<String>();
+//
+//        list1.add("One");
+//        list1.add("Two");
+//        list1.add("Three");
+//        list1.add("One 1");
+//        list1.add("Two 2 2");
+//        list1.add("Three 3 3 333");
+//
+//        list2.add("Cat meo");
+//        list2.add("Dog cho cho go og");
+//        list2.add("Fish anh fix");
+//
+//        map.put("Numbers", list1);
+//        map.put("Animals", list2);
+
+        HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+        ArrayList<String> tempDefi = new ArrayList<String>();
+        for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
+        {
+//            if(entry.getValue().contains("Cat")) {
+//                System.out.println("Found Cat in " + entry.getKey());
+//            } else {
+//                System.out.println("In else statement");
+//                ArrayList<String> values = entry.getValue();
+//                for (String e : values) {
+//                    if (e.contains("Cat")) {
+//                        System.out.println(e);
+//                    }
+//                }
+//
+//            }
+            tempDefi.clear();
+            boolean founded = false;
+            ArrayList<String> values = entry.getValue();
+            for (String e : values) {
+                if (e.contains(needle)) {
+                    founded = true;
+                    tempDefi.add(e);
+                }
+            }
+            if (founded) {
+                results.put(entry.getKey(), tempDefi);
+            }
+        }
+        return results;
+    }
+
+    public void showDictionary() {
+        HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+        int i = 0;
+        for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
+        {
+            i++;
+            ArrayList<String> values = entry.getValue();
+            System.out.print("\n" + i + ". " + entry.getKey() + ": ");
+            for (String e : values) {
+                    System.out.print(e + "|**|  ");
+
+            }
+
+        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -83,6 +163,11 @@ public class SlangWord {
         String filename = "./src/main/java/com/company/slang.txt";
 
         dic.loadFromTextFile(filename);
+
+        dic.showDictionary();
+
+//        String value = ":";
+//        HashMap<String, ArrayList<String>> results = dic.searchByDefinition(value);
 
     }
 }

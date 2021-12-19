@@ -481,6 +481,21 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_nextButtonActionPerformed
 
+    public static void createAndShowGUI() {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JFrame frame = new JFrame("Slang Words Dictionary");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Menu newContentPane = new Menu();
+        newContentPane.setOpaque(true);
+
+        frame.setContentPane(newContentPane);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setResizable(false);
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aButton;
