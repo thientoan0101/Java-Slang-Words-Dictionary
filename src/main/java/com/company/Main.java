@@ -4,12 +4,14 @@
  */
 package com.company;
 
+import java.io.IOException;
+
 /**
  *
  * @author thien
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 	// write your code here
         Menu.createAndShowGUI();
     }

@@ -65,12 +65,12 @@ public class SlangWord {
             //String[] def = temp[1].split("\\| ");
             setSlang.add(slang);
             ArrayList<String> definitions = new ArrayList<String>(Arrays.asList(temp[1].split("\\| ")));
-            if (definitions.size()!=0) {
-                //System.out.println("\t\t\t\t" + i + ". " + slang);
-                System.out.println(slang);
-            } else {
-                System.out.println("\n\n\n\n\n\n\n\n");
-            }
+//            if (definitions.size()!=0) {
+//                //System.out.println("\t\t\t\t" + i + ". " + slang);
+//                System.out.println(slang);
+//            } else {
+//                System.out.println("\n\n\n\n\n\n\n\n");
+//            }
             if (dictionary.containsKey(slang)==true) {
                 ArrayList<String> oldDefinition = dictionary.get(slang);
                 definitions.addAll(oldDefinition);
@@ -81,16 +81,16 @@ public class SlangWord {
         System.out.println("\n\ndictionary: " + dictionary.size());
         System.out.println("\n\nset size: " + setSlang.size());
         //map.put("Numbers", list1);
-        Iterator<String> itr = setSlang.iterator();
-        int index = 0;
-        while (itr.hasNext()) {
-            index++;
-            System.out.println(itr.next());
-        }
+//        Iterator<String> itr = setSlang.iterator();
+//        int index = 0;
+//        while (itr.hasNext()) {
+//            index++;
+//            System.out.println(itr.next());
+//        }
         return dictionary;
     }
 
-    public HashMap<String, ArrayList<String>> searchByDefinition(String needle) {
+    public HashMap<String, ArrayList<String>> searchByDefinition(String value) {
 //        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
 //
 //        ArrayList<String> list1 = new ArrayList<String>();
@@ -109,9 +109,9 @@ public class SlangWord {
 //
 //        map.put("Numbers", list1);
 //        map.put("Animals", list2);
-
+        String needle = value.toLowerCase();
         HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
-        ArrayList<String> tempDefi = new ArrayList<String>();
+//        ArrayList<String> tempDefi = new ArrayList<String>();
         for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
         {
 //            if(entry.getValue().contains("Cat")) {
@@ -126,13 +126,15 @@ public class SlangWord {
 //                }
 //
 //            }
-            tempDefi.clear();
+            //tempDefi.clear();
             boolean founded = false;
+            ArrayList<String> tempDefi = new ArrayList<String>();
             ArrayList<String> values = entry.getValue();
             for (String e : values) {
-                if (e.contains(needle)) {
+                if (e.toLowerCase().contains(needle)) {
                     founded = true;
                     tempDefi.add(e);
+                    System.out.println(entry.getKey() + ": founded value: " + e);
                 }
             }
             if (founded) {
@@ -164,10 +166,26 @@ public class SlangWord {
 
         dic.loadFromTextFile(filename);
 
-        dic.showDictionary();
+        //dic.showDictionary();
 
-//        String value = ":";
-//        HashMap<String, ArrayList<String>> results = dic.searchByDefinition(value);
+        Scanner scan = new Scanner(System.in);
+
+        System.out.print("\n\n\nEnter keyword to search: ");
+        String value = scan.next();
+        HashMap<String, ArrayList<String>> results = dic.searchByDefinition(value);
+
+        int i = 0;
+        for(Map.Entry<String, ArrayList<String>> entry : results.entrySet())
+        {
+            i++;
+            ArrayList<String> values = entry.getValue();
+            System.out.print("\n" + i + ". " + entry.getKey() + ": ");
+            for (String e : values) {
+                System.out.print(e + "|**|  ");
+
+            }
+
+        }
 
     }
 }

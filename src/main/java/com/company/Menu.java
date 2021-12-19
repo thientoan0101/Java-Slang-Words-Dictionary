@@ -13,21 +13,53 @@ import java.awt.event.MouseEvent;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Vector;
+import java.util.*;
+
 /**
  *
  * @author thien
  */
 public class Menu extends javax.swing.JPanel {
-
+    private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
+    private String slangFile = "./src/main/java/com/company/slang.txt";
     /**
      * Creates new form Menu
      */
-    public Menu() {
+    public Menu() throws IOException {
+        loadFromTextFile(slangFile);
         initComponents();
     }
+
+    public HashMap<String, ArrayList<String>> loadFromTextFile(String filename) throws IOException {
+        BufferedReader br;
+        try
+        {
+            br = new BufferedReader(new FileReader(filename));
+        }
+        catch(IOException exc)
+        {
+            System.out.println("Error opening file");
+            return dictionary;
+        }
+        String str ;
+        while (true)
+        {
+            str = br.readLine();
+            if (str==null) break;
+            String[] temp = str.split("`");
+            String slang = temp[0];
+            ArrayList<String> definitions = new ArrayList<String>(Arrays.asList(temp[1].split("\\| ")));
+            if (dictionary.containsKey(slang)==true) {
+                ArrayList<String> oldDefinition = dictionary.get(slang);
+                definitions.addAll(oldDefinition);
+            }
+            dictionary.put(slang, definitions);
+        }
+        System.out.println("\n\nSuccessful");
+        System.out.println("\n\ndictionary: " + dictionary.size());
+        return dictionary;
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -481,7 +513,7 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_nextButtonActionPerformed
 
-    public static void createAndShowGUI() {
+    public static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Slang Words Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
