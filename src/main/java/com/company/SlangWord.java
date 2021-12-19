@@ -114,18 +114,7 @@ public class SlangWord {
 //        ArrayList<String> tempDefi = new ArrayList<String>();
         for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
         {
-//            if(entry.getValue().contains("Cat")) {
-//                System.out.println("Found Cat in " + entry.getKey());
-//            } else {
-//                System.out.println("In else statement");
-//                ArrayList<String> values = entry.getValue();
-//                for (String e : values) {
-//                    if (e.contains("Cat")) {
-//                        System.out.println(e);
-//                    }
-//                }
-//
-//            }
+
             //tempDefi.clear();
             boolean founded = false;
             ArrayList<String> tempDefi = new ArrayList<String>();

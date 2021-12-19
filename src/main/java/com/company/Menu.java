@@ -20,36 +20,38 @@ import java.util.*;
  * @author thien
  */
 public class Menu extends javax.swing.JPanel {
+
     private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
     private String slangFile = "./src/main/java/com/company/slang.txt";
+    private int selectedIndex;
+    private DefaultTableModel model;
     /**
      * Creates new form Menu
      */
     public Menu() throws IOException {
         loadFromTextFile(slangFile);
         initComponents();
+        loadDataIntoTable(dictionary);
     }
 
     public HashMap<String, ArrayList<String>> loadFromTextFile(String filename) throws IOException {
         BufferedReader br;
-        try
-        {
+        try {
             br = new BufferedReader(new FileReader(filename));
-        }
-        catch(IOException exc)
-        {
+        } catch (IOException exc) {
             System.out.println("Error opening file");
             return dictionary;
         }
-        String str ;
-        while (true)
-        {
+        String str;
+        while (true) {
             str = br.readLine();
-            if (str==null) break;
+            if (str == null) {
+                break;
+            }
             String[] temp = str.split("`");
             String slang = temp[0];
             ArrayList<String> definitions = new ArrayList<String>(Arrays.asList(temp[1].split("\\| ")));
-            if (dictionary.containsKey(slang)==true) {
+            if (dictionary.containsKey(slang) == true) {
                 ArrayList<String> oldDefinition = dictionary.get(slang);
                 definitions.addAll(oldDefinition);
             }
@@ -60,6 +62,44 @@ public class Menu extends javax.swing.JPanel {
         return dictionary;
     }
 
+    public void loadDataIntoTable(HashMap<String, ArrayList<String>> map) {
+        System.out.println("into load data into db");
+        model = new DefaultTableModel();
+        Vector headerColumn = new Vector();
+        headerColumn.add("ID");
+        headerColumn.add("Slang");
+        headerColumn.add("Definition");
+
+        model.setColumnIdentifiers(headerColumn);
+        // set data
+        int i = 0;
+        for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
+
+            ArrayList<String> values = entry.getValue();
+            System.out.print("\n" + i + ". " + entry.getKey() + ": ");
+            for (String e : values) {
+                i++;
+                Vector row = new Vector();
+                row.add(i);
+                row.add(entry.getKey());
+                row.add(e);
+                model.addRow(row);
+            }
+
+        }
+
+        slangTable.setModel(model);
+        slangTable.getColumnModel().getColumn(0).setMaxWidth(45);
+        slangTable.getColumnModel().getColumn(1).setMaxWidth(120);
+        slangTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+//        table.getColumnModel().getColumn(1).setPreferredWidth(120);
+//        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+//        tableStudent.addMouseListener(new java.awt.event.MouseAdapter() {
+//            public void mouseClicked(java.awt.event.MouseEvent evt) {
+//                jTableMouseClicked(evt);
+//            }
+//        });
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,7 +120,7 @@ public class Menu extends javax.swing.JPanel {
         historyButton = new javax.swing.JButton();
         tablePane = new javax.swing.JPanel();
         tableScrollPane = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        slangTable = new javax.swing.JTable();
         resetPane = new javax.swing.JPanel();
         resetButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
@@ -186,8 +226,7 @@ public class Menu extends javax.swing.JPanel {
                 .addComponent(searchPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jTable1.setForeground(new java.awt.Color(255, 255, 255));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        slangTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -198,9 +237,14 @@ public class Menu extends javax.swing.JPanel {
                 "Index", "Slang", "Definition"
             }
         ));
-        tableScrollPane.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
+        slangTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                slangTableMouseClicked(evt);
+            }
+        });
+        tableScrollPane.setViewportView(slangTable);
+        if (slangTable.getColumnModel().getColumnCount() > 0) {
+            slangTable.getColumnModel().getColumn(0).setResizable(false);
         }
 
         resetButton.setText("Reset");
@@ -209,6 +253,7 @@ public class Menu extends javax.swing.JPanel {
                 resetButtonActionPerformed(evt);
             }
         });
+        resetPane.add(resetButton);
 
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -216,34 +261,16 @@ public class Menu extends javax.swing.JPanel {
                 refreshButtonActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout resetPaneLayout = new javax.swing.GroupLayout(resetPane);
-        resetPane.setLayout(resetPaneLayout);
-        resetPaneLayout.setHorizontalGroup(
-            resetPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, resetPaneLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(refreshButton)
-                .addGap(30, 30, 30)
-                .addComponent(resetButton)
-                .addGap(92, 92, 92))
-        );
-        resetPaneLayout.setVerticalGroup(
-            resetPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(resetPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(resetPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(resetButton)
-                    .addComponent(refreshButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        resetPane.add(refreshButton);
 
         javax.swing.GroupLayout tablePaneLayout = new javax.swing.GroupLayout(tablePane);
         tablePane.setLayout(tablePaneLayout);
         tablePaneLayout.setHorizontalGroup(
             tablePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(resetPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(tablePaneLayout.createSequentialGroup()
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         tablePaneLayout.setVerticalGroup(
             tablePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -353,7 +380,7 @@ public class Menu extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        playPane.setBorder(javax.swing.BorderFactory.createLineBorder(null));
+        playPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jButton5.setText("Let's Play Quiz Game");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -513,6 +540,18 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_nextButtonActionPerformed
 
+    private void slangTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_slangTableMouseClicked
+        selectedIndex = slangTable.getSelectedRow();
+
+//        idField.setText(model.getValueAt(selectedIndex, 0).toString());
+        slangField.setText(model.getValueAt(selectedIndex, 1).toString());
+        definiField.setText(model.getValueAt(selectedIndex, 2).toString());
+//        gpaField.setText(model.getValueAt(selectedIndex, 3).toString());
+//        addressField.setText(model.getValueAt(selectedIndex, 4).toString());
+//        imageField.setText(model.getValueAt(selectedIndex, 5).toString());
+//        noteField.setText(model.getValueAt(selectedIndex, 6).toString());        // TODO add your handling code here:
+    }//GEN-LAST:event_slangTableMouseClicked
+
     public static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Slang Words Dictionary");
@@ -526,9 +565,8 @@ public class Menu extends javax.swing.JPanel {
         frame.setVisible(true);
         frame.setResizable(false);
     }
-    
-    
 
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aButton;
     private javax.swing.JButton addButton;
@@ -547,7 +585,6 @@ public class Menu extends javax.swing.JPanel {
     private javax.swing.JPanel inputDetailPane;
     private javax.swing.JButton jButton5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JPanel leftPane;
     private javax.swing.JLabel nameAppLabel;
     private javax.swing.JButton nextButton;
@@ -567,6 +604,7 @@ public class Menu extends javax.swing.JPanel {
     private javax.swing.JPanel searchPane;
     private javax.swing.JTextField slangField;
     private javax.swing.JLabel slangLabel;
+    private javax.swing.JTable slangTable;
     private javax.swing.JButton stopButton;
     private javax.swing.JPanel tablePane;
     private javax.swing.JScrollPane tableScrollPane;
