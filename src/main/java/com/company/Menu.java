@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.io.*;
 import java.sql.*;
@@ -101,6 +103,29 @@ public class Menu extends javax.swing.JPanel {
 //        });
     }
 
+    public HashMap<String, ArrayList<String>> searchByDefinition(String value) {
+        String needle = value.toLowerCase();
+        HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+
+        for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
+        {
+            boolean founded = false;
+            ArrayList<String> tempDefi = new ArrayList<String>();
+            ArrayList<String> values = entry.getValue();
+            for (String e : values) {
+                if (e.toLowerCase().contains(needle)) {
+                    founded = true;
+                    tempDefi.add(e);
+                    System.out.println(entry.getKey() + ": founded value: " + e);
+                }
+            }
+            if (founded) {
+                results.put(entry.getKey(), tempDefi);
+            }
+        }
+        return results;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -122,8 +147,8 @@ public class Menu extends javax.swing.JPanel {
         tableScrollPane = new javax.swing.JScrollPane();
         slangTable = new javax.swing.JTable();
         resetPane = new javax.swing.JPanel();
-        resetButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
         leftPane = new javax.swing.JPanel();
         randomPane = new javax.swing.JPanel();
         randomButton = new javax.swing.JButton();
@@ -153,11 +178,16 @@ public class Menu extends javax.swing.JPanel {
 
         nameAppLabel.setText("JAVA SLANG WORDS DICTIONARY");
 
-        searchLabel.setText("Input: ");
+        searchLabel.setText("Keyword: ");
 
         searchField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchFieldActionPerformed(evt);
+            }
+        });
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchFieldKeyReleased(evt);
             }
         });
 
@@ -169,6 +199,11 @@ public class Menu extends javax.swing.JPanel {
         });
 
         searchButton.setText("Search");
+        searchButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                searchButtonMouseClicked(evt);
+            }
+        });
 
         historyButton.setText("History");
         historyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -211,18 +246,17 @@ public class Menu extends javax.swing.JPanel {
         headerPane.setLayout(headerPaneLayout);
         headerPaneLayout.setHorizontalGroup(
             headerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(headerPaneLayout.createSequentialGroup()
-                .addGap(275, 275, 275)
-                .addComponent(nameAppLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(searchPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerPaneLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(nameAppLabel)
+                .addGap(310, 310, 310))
         );
         headerPaneLayout.setVerticalGroup(
             headerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerPaneLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
                 .addComponent(nameAppLabel)
-                .addGap(5, 5, 5)
+                .addGap(10, 10, 10)
                 .addComponent(searchPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -247,14 +281,6 @@ public class Menu extends javax.swing.JPanel {
             slangTable.getColumnModel().getColumn(0).setResizable(false);
         }
 
-        resetButton.setText("Reset");
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
-            }
-        });
-        resetPane.add(resetButton);
-
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -262,6 +288,14 @@ public class Menu extends javax.swing.JPanel {
             }
         });
         resetPane.add(refreshButton);
+
+        resetButton.setText("Reset");
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
+            }
+        });
+        resetPane.add(resetButton);
 
         javax.swing.GroupLayout tablePaneLayout = new javax.swing.GroupLayout(tablePane);
         tablePane.setLayout(tablePaneLayout);
@@ -551,6 +585,43 @@ public class Menu extends javax.swing.JPanel {
 //        imageField.setText(model.getValueAt(selectedIndex, 5).toString());
 //        noteField.setText(model.getValueAt(selectedIndex, 6).toString());        // TODO add your handling code here:
     }//GEN-LAST:event_slangTableMouseClicked
+
+    private void searchButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMouseClicked
+        // TODO add your handling code here:
+        if (searchField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this,"Please enter something to search");
+        }
+        else {
+            try {                               
+                String keyword = searchField.getText().toString();                
+                String typeToSearch = (String)searchComboBox.getSelectedItem();
+                HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+                if (typeToSearch.equals("Definition")) {
+                    results = searchByDefinition(keyword);
+                    loadDataIntoTable(results);
+                } else {
+                    
+                }
+                
+            }
+            catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"Please Enter full information or valid field");
+            }
+        }
+
+        
+        
+    }//GEN-LAST:event_searchButtonMouseClicked
+
+    private void searchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+        {  
+            if (searchField.getText().equals("")) {        
+                loadDataIntoTable(dictionary);
+            } 
+        }
+    }//GEN-LAST:event_searchFieldKeyReleased
 
     public static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(true);
