@@ -387,6 +387,11 @@ public class Menu extends javax.swing.JPanel {
         );
 
         addButton.setText("Add");
+        addButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addButtonMouseClicked(evt);
+            }
+        });
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
@@ -395,6 +400,11 @@ public class Menu extends javax.swing.JPanel {
         addEditPane.add(addButton);
 
         editButton.setText("Edit");
+        editButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                editButtonMouseClicked(evt);
+            }
+        });
         editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editButtonActionPerformed(evt);
@@ -637,6 +647,106 @@ public class Menu extends javax.swing.JPanel {
             } 
         }
     }//GEN-LAST:event_searchFieldKeyReleased
+
+    private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseClicked
+        // TODO add your handling code here:
+        if (slangField.getText().equals("") || definiField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this,"Please Enter full information");
+        }
+        else {
+            try {
+                String slang = slangField.getText().toString();
+                String definition = definiField.getText().toString();
+
+                if (dictionary.containsKey(slang)==true) {
+                    Object[] options = {"Duplicate", "Overwrite", "Cancel"};
+                    int result = JOptionPane.showOptionDialog(this,"This slang is existed. Do you want make duplicate?",
+                            "Choose Duplicate or Overwrite", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
+                    if(result == JOptionPane.YES_OPTION){
+                        //System.out.println("duplicate");
+                        ArrayList<String> oldDefinition = dictionary.get(slang);
+                        oldDefinition.add(definition);
+                        dictionary.put(slang, oldDefinition);
+                    }else if (result == JOptionPane.NO_OPTION){
+                        //System.out.println("Overwrite");
+                        ArrayList<String> definitions = new ArrayList<String>();
+                        definitions.add(definition);
+                        dictionary.put(slang, definitions);
+                    } else if (result == JOptionPane.CANCEL_OPTION) {
+                        //System.out.println("cancel");
+                        return;
+                    }
+
+                } else {
+                    ArrayList<String> definitions = new ArrayList<String>();
+                    definitions.add(definition);
+                    dictionary.put(slang, definitions);
+                }
+                JOptionPane.showMessageDialog(this,"Add Successfully");
+                slangField.setText("");
+                definiField.setText("");
+                loadDataIntoTable(dictionary);
+            }
+            catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"There are some error, please try again");
+            }
+        }
+
+    }//GEN-LAST:event_addButtonMouseClicked
+
+    private void editButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editButtonMouseClicked
+        // TODO add your handling code here:
+        selectedIndex = slangTable.getSelectedRow();
+        if(dictionary.size() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Nothing here to update");
+        } else if(selectedIndex == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Let's pick some slang to update");
+        } else if (slangField.getText().equals("") || definiField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this,"Please enter full information");
+        }
+        else {
+            try {
+                String slang = slangField.getText().toString();
+                String newDefinition = definiField.getText().toString();
+                String oldSlang = model.getValueAt(selectedIndex, 1).toString();
+                String oldDefinition = model.getValueAt(selectedIndex, 2).toString();
+                int ret = JOptionPane.showConfirmDialog(this, "Do you want to update?", "Confirm", JOptionPane.YES_NO_OPTION);
+                if(ret != JOptionPane.YES_OPTION) {
+                    return;
+                }
+                if (dictionary.containsKey(slang)==true) {
+                    ArrayList<String> oldDefis = dictionary.get(slang);
+                    boolean founded = false;
+                    for (int i=0; i<oldDefis.size();i++) {
+                        if (oldDefis.get(i).equals(oldDefinition)) {
+                            founded = true;
+                            oldDefis.set(i, newDefinition);
+                            break;
+                        }
+                    }
+                    if (founded) {
+                        dictionary.put(slang, oldDefis);
+                        JOptionPane.showMessageDialog(this,"Edit Successfully");
+                        slangField.setText("");
+                        definiField.setText("");
+                        loadDataIntoTable(dictionary);
+                        return;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Old value doesn't match anything of new key to update");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this,"This key is not exist to update");
+                }
+            }
+            catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"Please try again");
+            }
+
+        }
+
+    }//GEN-LAST:event_editButtonMouseClicked
 
     public static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(true);
