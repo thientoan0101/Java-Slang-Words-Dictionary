@@ -133,6 +133,19 @@ public class SlangWord {
         return results;
     }
 
+    public HashMap<String, ArrayList<String>> searchByKeySlang(String value) {
+        String needle = value.toLowerCase();
+        HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+        for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
+        {
+            if (entry.getKey().toLowerCase().contains(needle)) {
+                    results.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return results;
+    }
+
+
     public void showDictionary() {
         HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
         int i = 0;
@@ -161,7 +174,8 @@ public class SlangWord {
 
         System.out.print("\n\n\nEnter keyword to search: ");
         String value = scan.next();
-        HashMap<String, ArrayList<String>> results = dic.searchByDefinition(value);
+//        HashMap<String, ArrayList<String>> results = dic.searchByDefinition(value);
+        HashMap<String, ArrayList<String>> results = dic.searchByKeySlang(value);
 
         int i = 0;
         for(Map.Entry<String, ArrayList<String>> entry : results.entrySet())

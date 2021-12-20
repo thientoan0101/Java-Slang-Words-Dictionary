@@ -102,6 +102,18 @@ public class Menu extends javax.swing.JPanel {
 //            }
 //        });
     }
+    public HashMap<String, ArrayList<String>> searchByKeySlang(String value) {
+        String needle = value.toLowerCase();
+        HashMap<String, ArrayList<String>> results = new HashMap<String, ArrayList<String>>();
+        for(Map.Entry<String, ArrayList<String>> entry : dictionary.entrySet())
+        {
+            if (entry.getKey().toLowerCase().contains(needle)) {
+                results.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return results;
+    }
+
 
     public HashMap<String, ArrayList<String>> searchByDefinition(String value) {
         String needle = value.toLowerCase();
@@ -599,9 +611,12 @@ public class Menu extends javax.swing.JPanel {
                 if (typeToSearch.equals("Definition")) {
                     results = searchByDefinition(keyword);
                     loadDataIntoTable(results);
-                } else {
-                    
+                } else if (typeToSearch.equals("Slang")) {
+                    results = searchByKeySlang(keyword);
+                    loadDataIntoTable(results);
                 }
+                    
+
                 
             }
             catch (Exception e) {
