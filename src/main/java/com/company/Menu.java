@@ -24,14 +24,21 @@ import java.util.*;
 public class Menu extends javax.swing.JPanel {
 
     private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
+    private HashMap<String, ArrayList<String>> history = new HashMap<String, ArrayList<String>>();
     private String slangFile = "./src/main/java/com/company/slang.txt";
+    ArrayList<String> keySet;
     private int selectedIndex;
     private DefaultTableModel model;
+    private String questionVal;
+    private String answerVal;
+
+
     /**
      * Creates new form Menu
      */
     public Menu() throws IOException {
         loadFromTextFile(slangFile);
+        keySet = new ArrayList<String>(dictionary.keySet());
         initComponents();
         loadDataIntoTable(dictionary);
     }
@@ -78,7 +85,7 @@ public class Menu extends javax.swing.JPanel {
         for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
 
             ArrayList<String> values = entry.getValue();
-            System.out.print("\n" + i + ". " + entry.getKey() + ": ");
+
             for (String e : values) {
                 i++;
                 Vector row = new Vector();
@@ -109,6 +116,7 @@ public class Menu extends javax.swing.JPanel {
         {
             if (entry.getKey().toLowerCase().contains(needle)) {
                 results.put(entry.getKey(), entry.getValue());
+                history.put(entry.getKey(), entry.getValue());
             }
         }
         return results;
@@ -133,6 +141,7 @@ public class Menu extends javax.swing.JPanel {
             }
             if (founded) {
                 results.put(entry.getKey(), tempDefi);
+                history.put(entry.getKey(), tempDefi);
             }
         }
         return results;
@@ -159,7 +168,6 @@ public class Menu extends javax.swing.JPanel {
         tableScrollPane = new javax.swing.JScrollPane();
         slangTable = new javax.swing.JTable();
         resetPane = new javax.swing.JPanel();
-        refreshButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         leftPane = new javax.swing.JPanel();
         randomPane = new javax.swing.JPanel();
@@ -177,8 +185,11 @@ public class Menu extends javax.swing.JPanel {
         deleteButton = new javax.swing.JButton();
         playPane = new javax.swing.JPanel();
         questionPane = new javax.swing.JPanel();
-        jButton5 = new javax.swing.JButton();
         questionLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        modeComboBox = new javax.swing.JComboBox<>();
+        jPanel2 = new javax.swing.JPanel();
+        playButton = new javax.swing.JButton();
         answerPane = new javax.swing.JPanel();
         aButton = new javax.swing.JButton();
         bButton = new javax.swing.JButton();
@@ -203,7 +214,7 @@ public class Menu extends javax.swing.JPanel {
             }
         });
 
-        searchComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Slang", "Definition", " " }));
+        searchComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Slang", "Definition" }));
         searchComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchComboBoxActionPerformed(evt);
@@ -218,6 +229,11 @@ public class Menu extends javax.swing.JPanel {
         });
 
         historyButton.setText("History");
+        historyButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                historyButtonMouseClicked(evt);
+            }
+        });
         historyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 historyButtonActionPerformed(evt);
@@ -293,15 +309,7 @@ public class Menu extends javax.swing.JPanel {
             slangTable.getColumnModel().getColumn(0).setResizable(false);
         }
 
-        refreshButton.setText("Refresh");
-        refreshButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButtonActionPerformed(evt);
-            }
-        });
-        resetPane.add(refreshButton);
-
-        resetButton.setText("Reset");
+        resetButton.setText("Reset Default Dictionary");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
@@ -328,6 +336,11 @@ public class Menu extends javax.swing.JPanel {
         );
 
         randomButton.setText("Random Slang");
+        randomButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                randomButtonMouseClicked(evt);
+            }
+        });
         randomButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 randomButtonActionPerformed(evt);
@@ -430,7 +443,7 @@ public class Menu extends javax.swing.JPanel {
         detailPaneLayout.setHorizontalGroup(
             detailPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(inputDetailPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(addEditPane, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+            .addComponent(addEditPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         detailPaneLayout.setVerticalGroup(
             detailPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -443,14 +456,29 @@ public class Menu extends javax.swing.JPanel {
 
         playPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButton5.setText("Let's Play Quiz Game");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        questionLabel.setText("Question: ");
+
+        jLabel1.setText("Mode:");
+
+        modeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Slang", "Definition" }));
+        modeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                modeComboBoxActionPerformed(evt);
             }
         });
 
-        questionLabel.setText("Question: ");
+        playButton.setText("Let's Play Quiz Game");
+        playButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                playButtonMouseClicked(evt);
+            }
+        });
+        playButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playButtonActionPerformed(evt);
+            }
+        });
+        jPanel2.add(playButton);
 
         javax.swing.GroupLayout questionPaneLayout = new javax.swing.GroupLayout(questionPane);
         questionPane.setLayout(questionPaneLayout);
@@ -458,37 +486,78 @@ public class Menu extends javax.swing.JPanel {
             questionPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(questionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(questionPaneLayout.createSequentialGroup()
-                .addGap(107, 107, 107)
-                .addComponent(jButton5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(modeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         questionPaneLayout.setVerticalGroup(
             questionPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(questionPaneLayout.createSequentialGroup()
-                .addComponent(jButton5)
-                .addGap(4, 4, 4)
-                .addComponent(questionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(questionPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(modeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(questionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         answerPane.setLayout(new java.awt.GridLayout(2, 2, 20, 10));
 
         aButton.setText("A. ");
+        aButton.setEnabled(false);
+        aButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                aButtonMouseClicked(evt);
+            }
+        });
         answerPane.add(aButton);
 
         bButton.setText("B. ");
+        bButton.setEnabled(false);
+        bButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bButtonMouseClicked(evt);
+            }
+        });
         answerPane.add(bButton);
 
         cButton.setText("C. ");
+        cButton.setEnabled(false);
+        cButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cButtonMouseClicked(evt);
+            }
+        });
         answerPane.add(cButton);
 
         dButton.setText("D. ");
+        dButton.setEnabled(false);
+        dButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dButtonMouseClicked(evt);
+            }
+        });
         answerPane.add(dButton);
 
         stopButton.setText("Stop Game");
+        stopButton.setEnabled(false);
+        stopButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                stopButtonMouseClicked(evt);
+            }
+        });
         jPanel1.add(stopButton);
 
         nextButton.setText("Next Question");
+        nextButton.setEnabled(false);
+        nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                nextButtonMouseClicked(evt);
+            }
+        });
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);
@@ -502,7 +571,7 @@ public class Menu extends javax.swing.JPanel {
             playPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(questionPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(answerPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)
         );
         playPaneLayout.setVerticalGroup(
             playPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -573,10 +642,6 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_resetButtonActionPerformed
 
-    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_refreshButtonActionPerformed
-
     private void randomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_randomButtonActionPerformed
@@ -593,9 +658,9 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_deleteButtonActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_playButtonActionPerformed
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
         // TODO add your handling code here:
@@ -615,6 +680,7 @@ public class Menu extends javax.swing.JPanel {
 
     private void searchButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMouseClicked
         // TODO add your handling code here:
+
         if (searchField.getText().equals("")) {
             JOptionPane.showMessageDialog(this,"Please enter something to search");
         }
@@ -811,6 +877,153 @@ public class Menu extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_deleteButtonMouseClicked
 
+    private void randomButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_randomButtonMouseClicked
+        // TODO add your handling code here:
+        Random random = new Random();
+        int randomIndex = random.nextInt(keySet.size());
+        String key = keySet.get(randomIndex);
+        String defini = dictionary.get(key).get(0);
+        String randomWord = key + ": " + defini;
+        randomLabel.setText(randomWord);
+    }//GEN-LAST:event_randomButtonMouseClicked
+
+    private void showQuestion() {
+        Random random = new Random();
+        int randomIndex = random.nextInt(keySet.size());
+        String keySlang = keySet.get(randomIndex);
+        String defini = dictionary.get(keySlang).get(0);
+        String modePlay = (String)modeComboBox.getSelectedItem();
+        if (modePlay.equals("Slang")) {
+            randomIndex = random.nextInt(keySet.size());
+            aButton.setText(dictionary.get(keySet.get(randomIndex)).get(0));
+            randomIndex = random.nextInt(keySet.size());
+            bButton.setText(dictionary.get(keySet.get(randomIndex)).get(0));
+            randomIndex = random.nextInt(keySet.size());
+            cButton.setText(dictionary.get(keySet.get(randomIndex)).get(0));
+            randomIndex = random.nextInt(keySet.size());
+            dButton.setText(dictionary.get(keySet.get(randomIndex)).get(0));
+            randomIndex = random.nextInt(4);
+            questionVal = keySlang;
+            answerVal = defini;
+            if (randomIndex==0) aButton.setText(defini);
+            else if (randomIndex==1) bButton.setText(defini);
+            else if (randomIndex==2) cButton.setText(defini);
+            else dButton.setText(defini);
+            questionLabel.setText("Question: What is meaning of " + questionVal + "?");
+        } else {
+            randomIndex = random.nextInt(keySet.size());
+            aButton.setText(keySet.get(randomIndex));
+            randomIndex = random.nextInt(keySet.size());
+            bButton.setText(keySet.get(randomIndex));
+            randomIndex = random.nextInt(keySet.size());
+            cButton.setText(keySet.get(randomIndex));
+            randomIndex = random.nextInt(keySet.size());
+            dButton.setText(keySet.get(randomIndex));
+            randomIndex = random.nextInt(4);
+            questionVal = defini;
+            answerVal = keySlang;
+            if (randomIndex==0) aButton.setText(keySlang);
+            else if (randomIndex==1) bButton.setText(keySlang);
+            else if (randomIndex==2) cButton.setText(keySlang);
+            else dButton.setText(keySlang);
+            questionLabel.setText("What is slang of: " + questionVal + "?");
+        }
+    }
+
+    private void playButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playButtonMouseClicked
+        // TODO add your handling code here:
+        showQuestion();
+        aButton.setEnabled(true);
+        bButton.setEnabled(true);
+        cButton.setEnabled(true);
+        dButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        nextButton.setEnabled(true);
+    }//GEN-LAST:event_playButtonMouseClicked
+
+    private void aButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aButtonMouseClicked
+        // TODO add your handling code here:
+        if (aButton.isEnabled()) {
+            String value = aButton.getText();
+            if (value.equals(answerVal)) {
+                JOptionPane.showMessageDialog(this,"Correct (^.^)");
+            } else {
+                JOptionPane.showMessageDialog(this,"Incorrect (=.=). Please try again.");
+            }
+        }
+
+    }//GEN-LAST:event_aButtonMouseClicked
+
+    private void bButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bButtonMouseClicked
+        // TODO add your handling code here:
+        if (bButton.isEnabled()) {
+            String value = bButton.getText();
+            if (value.equals(answerVal)) {
+                JOptionPane.showMessageDialog(this,"Correct (^.^)");
+            } else {
+                JOptionPane.showMessageDialog(this,"Incorrect (=.=). Please try again.");
+            }
+        }
+    }//GEN-LAST:event_bButtonMouseClicked
+
+    private void cButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cButtonMouseClicked
+        // TODO add your handling code here:
+        if (cButton.isEnabled()) {
+            String value = cButton.getText();
+            if (value.equals(answerVal)) {
+                JOptionPane.showMessageDialog(this,"Correct (^.^)");
+            } else {
+                JOptionPane.showMessageDialog(this,"Incorrect (=.=). Please try again.");
+            }
+        }
+    }//GEN-LAST:event_cButtonMouseClicked
+
+    private void dButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dButtonMouseClicked
+        // TODO add your handling code here:
+        if (dButton.isEnabled()) {
+            String value = dButton.getText();
+            if (value.equals(answerVal)) {
+                JOptionPane.showMessageDialog(this,"Correct (^.^)");
+            } else {
+                JOptionPane.showMessageDialog(this,"Incorrect (=.=). Please try again.");
+            }
+        }
+    }//GEN-LAST:event_dButtonMouseClicked
+
+    private void modeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_modeComboBoxActionPerformed
+
+    private void stopButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopButtonMouseClicked
+        // TODO add your handling code here:
+        if (stopButton.isEnabled()) {
+            aButton.setEnabled(false);
+            bButton.setEnabled(false);
+            cButton.setEnabled(false);
+            dButton.setEnabled(false);
+            stopButton.setEnabled(false);
+            nextButton.setEnabled(false);
+
+            aButton.setText("A. ");
+            bButton.setText("B. ");
+            cButton.setText("C. ");
+            dButton.setText("D. ");
+            questionLabel.setText("Question: ");
+        }
+    }//GEN-LAST:event_stopButtonMouseClicked
+
+    private void nextButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextButtonMouseClicked
+        // TODO add your handling code here:
+        if (nextButton.isEnabled()) {
+            showQuestion();   
+        }
+    }//GEN-LAST:event_nextButtonMouseClicked
+
+    private void historyButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyButtonMouseClicked
+        // TODO add your handling code here:
+        HistoryForm histoFrame = new HistoryForm(history);
+    }//GEN-LAST:event_historyButtonMouseClicked
+
     public static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("Slang Words Dictionary");
@@ -842,18 +1055,20 @@ public class Menu extends javax.swing.JPanel {
     private javax.swing.JPanel headerPane;
     private javax.swing.JButton historyButton;
     private javax.swing.JPanel inputDetailPane;
-    private javax.swing.JButton jButton5;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel leftPane;
+    private javax.swing.JComboBox<String> modeComboBox;
     private javax.swing.JLabel nameAppLabel;
     private javax.swing.JButton nextButton;
+    private javax.swing.JButton playButton;
     private javax.swing.JPanel playPane;
     private javax.swing.JLabel questionLabel;
     private javax.swing.JPanel questionPane;
     private javax.swing.JButton randomButton;
     private javax.swing.JLabel randomLabel;
     private javax.swing.JPanel randomPane;
-    private javax.swing.JButton refreshButton;
     private javax.swing.JButton resetButton;
     private javax.swing.JPanel resetPane;
     private javax.swing.JButton searchButton;
