@@ -15,7 +15,7 @@ public class Dictionary implements Serializable {
 
     private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
 
-    Dictionary(String serialFileName, String rawFileName) {
+    Dictionary() {
         dictionary = new HashMap<String, ArrayList<String>>();
     }
 

@@ -26,21 +26,69 @@ public class Menu extends javax.swing.JPanel {
     private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
     private HashMap<String, ArrayList<String>> history = new HashMap<String, ArrayList<String>>();
     private String slangFile = "./src/main/java/com/company/slang.txt";
+    private String dataSerialFileName = "./data.dat";
+    private String histoSerialFileName = "./histo.dat";
     ArrayList<String> keySet;
     private int selectedIndex;
     private DefaultTableModel model;
     private String questionVal;
     private String answerVal;
-
+    private Dictionary dic;
+    private Dictionary histoSerial;
 
     /**
      * Creates new form Menu
      */
     public Menu() throws IOException {
-        loadFromTextFile(slangFile);
+        dic = new Dictionary();
+        histoSerial = new Dictionary();
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataSerialFileName));
+            dic = (Dictionary) ois.readObject();
+            dictionary = dic.getDictionary();
+            ois.close();
+            System.out.println("read serialize");
+        } catch (Exception e) {
+            loadFromTextFile(slangFile);
+            try {
+                dic.setDictionary(dictionary);
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dataSerialFileName));
+                oos.writeObject(dic);
+
+                oos.close();
+            } catch (Exception exp) {
+                System.out.println("can't serialize");
+            }
+        }
+        // history
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(histoSerialFileName));
+            histoSerial = (Dictionary) ois.readObject();
+            history = histoSerial.getDictionary();
+            ois.close();
+            System.out.println("read history serialize");
+        } catch (Exception e) {
+            System.out.println("can't history serialize");
+        }
+
+
         keySet = new ArrayList<String>(dictionary.keySet());
         initComponents();
         loadDataIntoTable(dictionary);
+
+    }
+
+    public void saveHistory() {
+        try {
+            histoSerial.setDictionary(history);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(histoSerialFileName));
+            oos.writeObject(histoSerial);
+
+            oos.close();
+            System.out.println("save success serialize history");
+        } catch (Exception exp) {
+            System.out.println("can't serialize history");
+        }
     }
 
     public HashMap<String, ArrayList<String>> loadFromTextFile(String filename) throws IOException {
@@ -1031,6 +1079,17 @@ public class Menu extends javax.swing.JPanel {
 
         Menu newContentPane = new Menu();
         newContentPane.setOpaque(true);
+
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+//                    System.exit(0);
+                    newContentPane.saveHistory();
+                }
+            }
+        });
 
         frame.setContentPane(newContentPane);
         frame.pack();
