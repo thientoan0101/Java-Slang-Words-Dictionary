@@ -75,7 +75,7 @@ public class Menu extends javax.swing.JPanel {
         keySet = new ArrayList<String>(dictionary.keySet());
         initComponents();
         loadDataIntoTable(dictionary);
-
+        randomSlang();
     }
 
     public void saveHistory() {
@@ -925,14 +925,24 @@ public class Menu extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_deleteButtonMouseClicked
 
-    private void randomButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_randomButtonMouseClicked
-        // TODO add your handling code here:
+    public void randomSlang() {
         Random random = new Random();
         int randomIndex = random.nextInt(keySet.size());
         String key = keySet.get(randomIndex);
         String defini = dictionary.get(key).get(0);
         String randomWord = key + ": " + defini;
         randomLabel.setText(randomWord);
+    }
+
+    private void randomButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_randomButtonMouseClicked
+        // TODO add your handling code here:
+//        Random random = new Random();
+//        int randomIndex = random.nextInt(keySet.size());
+//        String key = keySet.get(randomIndex);
+//        String defini = dictionary.get(key).get(0);
+//        String randomWord = key + ": " + defini;
+//        randomLabel.setText(randomWord);
+        randomSlang();
     }//GEN-LAST:event_randomButtonMouseClicked
 
     private void showQuestion() {
