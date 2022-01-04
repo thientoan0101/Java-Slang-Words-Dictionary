@@ -79,11 +79,21 @@ public class Menu extends javax.swing.JPanel {
         randomSlang();
     }
 
-    public void saveHistory() {
+    public void save() {
         try {
             histoSerial.setDictionary(history);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(histoSerialFileName));
             oos.writeObject(histoSerial);
+
+            oos.close();
+            //System.out.println("save success serialize history");
+        } catch (Exception exp) {
+            //System.out.println("can't serialize history");
+        }
+        try {
+            dic.setDictionary(dictionary);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dataSerialFileName));
+            oos.writeObject(dic);
 
             oos.close();
             //System.out.println("save success serialize history");
@@ -693,13 +703,13 @@ public class Menu extends javax.swing.JPanel {
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) throws IOException {//GEN-FIRST:event_resetButtonActionPerformed
         // TODO add your handling code here:
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataSerialFileName));
-            dic = (Dictionary) ois.readObject();
-            dictionary = dic.getDictionary();
-            ois.close();
-            //System.out.println("read reset serialize");
-        } catch (Exception e) {
+//        try {
+//            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataSerialFileName));
+//            dic = (Dictionary) ois.readObject();
+//            dictionary = dic.getDictionary();
+//            ois.close();
+//            //System.out.println("read reset serialize");
+//        } catch (Exception e) {
             loadFromTextFile(slangFile);
             try {
                 dic.setDictionary(dictionary);
@@ -710,7 +720,7 @@ public class Menu extends javax.swing.JPanel {
             } catch (Exception exp) {
                 //System.out.println("can't reset serialize");
             }
-        }
+        //}
         loadDataIntoTable(dictionary);
     }//GEN-LAST:event_resetButtonActionPerformed
 
@@ -1120,7 +1130,7 @@ public class Menu extends javax.swing.JPanel {
                 if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
 //                    System.exit(0);
-                    newContentPane.saveHistory();
+                    newContentPane.save();
                 }
             }
         });
