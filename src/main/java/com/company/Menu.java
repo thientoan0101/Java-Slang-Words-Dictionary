@@ -67,7 +67,7 @@ public class Menu extends javax.swing.JPanel {
             histoSerial = (Dictionary) ois.readObject();
             history = histoSerial.getDictionary();
             ois.close();
-            System.out.println("read history serialize");
+            //System.out.println("read history serialize");
         } catch (Exception e) {
             //System.out.println("can't history serialize");
         }
