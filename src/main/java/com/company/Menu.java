@@ -25,7 +25,8 @@ public class Menu extends javax.swing.JPanel {
 
     private HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
     private HashMap<String, ArrayList<String>> history = new HashMap<String, ArrayList<String>>();
-    private String slangFile = "./src/main/java/com/company/slang.txt";
+//    private String slangFile = "./src/main/java/com/company/slang.txt";
+    private String slangFile = "./slang.txt";
     private String dataSerialFileName = "./data.dat";
     private String histoSerialFileName = "./histo.dat";
     ArrayList<String> keySet;
@@ -47,7 +48,7 @@ public class Menu extends javax.swing.JPanel {
             dic = (Dictionary) ois.readObject();
             dictionary = dic.getDictionary();
             ois.close();
-            System.out.println("read serialize");
+            //System.out.println("read serialize");
         } catch (Exception e) {
             loadFromTextFile(slangFile);
             try {
@@ -57,7 +58,7 @@ public class Menu extends javax.swing.JPanel {
 
                 oos.close();
             } catch (Exception exp) {
-                System.out.println("can't serialize");
+                //System.out.println("can't serialize");
             }
         }
         // history
@@ -68,7 +69,7 @@ public class Menu extends javax.swing.JPanel {
             ois.close();
             System.out.println("read history serialize");
         } catch (Exception e) {
-            System.out.println("can't history serialize");
+            //System.out.println("can't history serialize");
         }
 
 
@@ -85,9 +86,9 @@ public class Menu extends javax.swing.JPanel {
             oos.writeObject(histoSerial);
 
             oos.close();
-            System.out.println("save success serialize history");
+            //System.out.println("save success serialize history");
         } catch (Exception exp) {
-            System.out.println("can't serialize history");
+            //System.out.println("can't serialize history");
         }
     }
 
@@ -96,7 +97,7 @@ public class Menu extends javax.swing.JPanel {
         try {
             br = new BufferedReader(new FileReader(filename));
         } catch (IOException exc) {
-            System.out.println("Error opening file");
+            //System.out.println("Error opening file");
             return dictionary;
         }
         String str;
@@ -114,13 +115,13 @@ public class Menu extends javax.swing.JPanel {
             }
             dictionary.put(slang, definitions);
         }
-        System.out.println("\n\nSuccessful");
-        System.out.println("\n\ndictionary: " + dictionary.size());
+        //System.out.println("\n\nSuccessful");
+        //System.out.println("\n\ndictionary: " + dictionary.size());
         return dictionary;
     }
 
     public void loadDataIntoTable(HashMap<String, ArrayList<String>> map) {
-        System.out.println("into load data into db");
+        //System.out.println("into load data into db");
         model = new DefaultTableModel();
         Vector headerColumn = new Vector();
         headerColumn.add("ID");
@@ -184,7 +185,7 @@ public class Menu extends javax.swing.JPanel {
                 if (e.toLowerCase().contains(needle)) {
                     founded = true;
                     tempDefi.add(e);
-                    System.out.println(entry.getKey() + ": founded value: " + e);
+                    //System.out.println(entry.getKey() + ": founded value: " + e);
                 }
             }
             if (founded) {
@@ -360,7 +361,11 @@ public class Menu extends javax.swing.JPanel {
         resetButton.setText("Reset Default Dictionary");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
+                try {
+                    resetButtonActionPerformed(evt);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         resetPane.add(resetButton);
@@ -686,8 +691,27 @@ public class Menu extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_historyButtonActionPerformed
 
-    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) throws IOException {//GEN-FIRST:event_resetButtonActionPerformed
         // TODO add your handling code here:
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataSerialFileName));
+            dic = (Dictionary) ois.readObject();
+            dictionary = dic.getDictionary();
+            ois.close();
+            //System.out.println("read reset serialize");
+        } catch (Exception e) {
+            loadFromTextFile(slangFile);
+            try {
+                dic.setDictionary(dictionary);
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dataSerialFileName));
+                oos.writeObject(dic);
+
+                oos.close();
+            } catch (Exception exp) {
+                //System.out.println("can't reset serialize");
+            }
+        }
+        loadDataIntoTable(dictionary);
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void randomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomButtonActionPerformed
