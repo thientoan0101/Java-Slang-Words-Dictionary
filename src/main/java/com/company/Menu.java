@@ -710,6 +710,8 @@ public class Menu extends javax.swing.JPanel {
 //            ois.close();
 //            //System.out.println("read reset serialize");
 //        } catch (Exception e) {
+        dictionary.clear();
+        dictionary = new HashMap<String, ArrayList<String>>();
             loadFromTextFile(slangFile);
             try {
                 dic.setDictionary(dictionary);
@@ -1127,11 +1129,16 @@ public class Menu extends javax.swing.JPanel {
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-//                    System.exit(0);
-                    newContentPane.save();
-                }
+//                if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?",
+//                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+////                    System.exit(0);
+//                    newContentPane.save();
+//                }
+//                int ret = JOptionPane.showConfirmDialog(frame, "Are you sure you want to close this window?", "Close Window?", JOptionPane.YES_NO_OPTION);
+//                if(ret != JOptionPane.YES_OPTION) {
+//                    return;
+//                }
+                newContentPane.save();
             }
         });
 
